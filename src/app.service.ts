@@ -1,10 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { ConfigService } from '@nestjs/config';
 import puppeteer from 'puppeteer';
 
 @Injectable()
 export class AppService {
   private readonly logger = new Logger(AppService.name);
+
+  constructor(private configService: ConfigService) {}
 
   @Cron(CronExpression.EVERY_HOUR)
   async handleCron() {
@@ -16,9 +19,18 @@ export class AppService {
 
       // Get the TRY sell price
       const try1 = await page.$('#try1');
-      const price = await (await try1.getProperty('textContent')).jsonValue();
+      const text = await (await try1.getProperty('textContent')).jsonValue();
+      const price =
+        parseInt(text) + parseInt(this.configService.get<string>('FEE'));
 
-      this.logger.debug('TRY sell price', parseInt(price));
+      await fetch(this.configService.get<string>('API_URL'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ price }),
+      });
+      this.logger.debug('TRY sell price', price);
     } catch (error) {
       this.logger.error('Error while scraping job listings:', error);
     } finally {
@@ -27,6 +39,6 @@ export class AppService {
   }
 
   getHello(): string {
-    return 'Hello World!';
+    return '<a href="https://www.rialir.com/lir/">https://www.rialir.com/lir/</a>';
   }
 }
