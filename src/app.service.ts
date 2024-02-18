@@ -6,6 +6,11 @@ import { ConfigService } from '@nestjs/config';
 export class AppService {
   constructor(private configService: ConfigService) {}
 
+  @Cron('* * * * * *')
+  handleLog() {
+    console.log('Called when the current second is 45');
+  }
+
   @Cron(CronExpression.EVERY_10_SECONDS)
   async handleCron() {
     try {
