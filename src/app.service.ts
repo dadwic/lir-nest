@@ -4,6 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import chromium from '@sparticuz/chromium';
 import puppeteer from 'puppeteer-core';
 
+chromium.setGraphicsMode = false;
+
 @Injectable()
 export class AppService {
   private readonly logger = new Logger(AppService.name);
