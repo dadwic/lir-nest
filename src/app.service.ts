@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 export class AppService {
   constructor(private configService: ConfigService) {}
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
     try {
       // Get the TRY sell price
@@ -15,17 +15,14 @@ export class AppService {
       const p = parseInt(data.p.replace(',', '')) / 10;
       const price = p + parseInt(this.configService.get<string>('FEE'));
 
-      try {
-        await fetch(this.configService.get<string>('API_URL'), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ price }),
-        });
-      } catch (error) {
-        console.log({ error });
-      }
+      const res = await fetch(this.configService.get<string>('API_URL'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ price }),
+      });
+      return await res.json();
     } catch (error) {
       console.log({ error });
     }
