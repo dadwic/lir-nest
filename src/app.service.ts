@@ -21,13 +21,13 @@ export class AppService {
       const price = p + parseInt(this.configService.get<string>('FEE'));
       console.log({ price });
 
-      await fetch(this.configService.get<string>('API_URL'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ price }),
-      });
+      // await fetch(this.configService.get<string>('API_URL'), {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({ price }),
+      // });
     } catch (error) {
       console.log({ error });
     }
