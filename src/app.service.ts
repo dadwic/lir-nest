@@ -3,6 +3,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 import chromium from '@sparticuz/chromium-min';
 import puppeteer from 'puppeteer-core';
+import { join } from 'path';
 
 @Injectable()
 export class AppService {
@@ -12,12 +13,11 @@ export class AppService {
 
   @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
-    const vercelUrl = this.configService.get<string>('VERCEL_URL');
     const browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(
-        `https://${vercelUrl}/chromium-v121.0.0-pack.tar`,
+        join(__dirname, '..', 'bin', 'chromium-v121.0.0-pack.tar'),
       ),
       headless: true,
       ignoreHTTPSErrors: true,
