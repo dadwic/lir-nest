@@ -1,10 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
-import chromium from '@sparticuz/chromium';
-import puppeteer from 'puppeteer-core';
-
-chromium.setGraphicsMode = false;
+import chromium from 'chrome-aws-lambda';
 
 @Injectable()
 export class AppService {
@@ -14,11 +11,16 @@ export class AppService {
 
   @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
-    const browser = await puppeteer.launch({
-      args: ['--no-sandbox'],
+    const browser = await chromium.puppeteer.launch({
+      args: [
+        ...chromium.args,
+        '--no-sandbox',
+        '--hide-scrollbars',
+        '--disable-web-security',
+      ],
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: true,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless,
       ignoreHTTPSErrors: true,
       ignoreDefaultArgs: ['--disable-extensions'],
     });
@@ -29,7 +31,8 @@ export class AppService {
 
       // Get the TRY sell price
       const try1 = await page.$('#try1');
-      const text = await (await try1.getProperty('textContent')).jsonValue();
+      const content = await try1.getProperty('textContent');
+      const text: string = await content.jsonValue();
       const price =
         parseInt(text) + parseInt(this.configService.get<string>('FEE'));
 
