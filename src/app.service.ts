@@ -3,7 +3,6 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 import chromium from '@sparticuz/chromium-min';
 import puppeteer from 'puppeteer-core';
-import { join } from 'path';
 
 @Injectable()
 export class AppService {
@@ -16,9 +15,7 @@ export class AppService {
     const browser = await puppeteer.launch({
       args: ['--no-sandbox'],
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(
-        join(__dirname, '..', 'bin', 'chromium-v121.0.0'),
-      ),
+      executablePath: await chromium.executablePath(),
       headless: true,
       ignoreHTTPSErrors: true,
       ignoreDefaultArgs: ['--disable-extensions'],
