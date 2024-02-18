@@ -14,13 +14,14 @@ export class AppService {
   @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
     const browser = await puppeteer.launch({
-      args: chromium.args,
+      args: ['--no-sandbox'],
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(
         join(__dirname, '..', 'bin', 'chromium-v121.0.0'),
       ),
       headless: true,
       ignoreHTTPSErrors: true,
+      ignoreDefaultArgs: ['--disable-extensions'],
     });
     const page = await browser.newPage();
 
