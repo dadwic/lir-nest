@@ -16,13 +16,14 @@ export class AppService {
       const price = p + parseInt(this.configService.get<string>('FEE'));
 
       if (price > 1500) {
-        await fetch(this.configService.get<string>('API_URL'), {
+        const res = await fetch(this.configService.get<string>('API_URL'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ price }),
         });
+        console.log(await res.json());
       }
     } catch (error) {
       console.log({ error });
