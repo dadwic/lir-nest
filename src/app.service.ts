@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 import { Octokit } from '@octokit/core';
@@ -7,7 +7,7 @@ import { Octokit } from '@octokit/core';
 export class AppService {
   constructor(private configService: ConfigService) {}
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
     try {
       // GitHub REST API
@@ -31,13 +31,14 @@ export class AppService {
       const p = parseInt(data.p.replace(',', '')) / 10;
       const price = p + parseInt(this.configService.get<string>('FEE'));
 
-      await fetch(this.configService.get<string>('API_URL'), {
+      const res = await fetch(this.configService.get<string>('API_URL'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ price }),
       });
+      throw new Error(await res.json());
     } catch (error) {
       console.log({ error });
     }
