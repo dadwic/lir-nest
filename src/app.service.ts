@@ -12,29 +12,19 @@ export class AppService {
 
   @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
-    const isLocal = Boolean(this.configService.get<string>('IS_LOCAL'));
-    if (!isLocal) chromium.setGraphicsMode = false;
-
     const browser = await puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(
+        'https://github.com/Sparticuz/chromium/releases/download/v121.0.0/chromium-v121.0.0-pack.tar',
+      ),
       headless: true,
-      ...(isLocal
-        ? { channel: 'chrome', args: puppeteer.defaultArgs() }
-        : {
-            args: [
-              ...chromium.args,
-              '--hide-scrollbars',
-              '--disable-web-security',
-            ],
-            defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath(
-              './bin/chromium-v121.0.0-pack.tar',
-            ),
-          }),
+      ignoreHTTPSErrors: true,
     });
     const page = await browser.newPage();
 
     try {
-      await page.goto('https://bonbast.com');
+      await page.goto('https://bonbast.com', { waitUntil: 'networkidle0' });
 
       // Get the TRY sell price
       const try1 = await page.$('#try1');
