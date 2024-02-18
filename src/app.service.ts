@@ -6,7 +6,11 @@ import { ConfigService } from '@nestjs/config';
 export class AppService {
   private readonly logger = new Logger(AppService.name);
 
-  constructor(private configService: ConfigService) {}
+  constructor(private configService: ConfigService) {
+    console.log(configService.get<string>('FEE'));
+    console.log(configService.get<string>('GH_URL'));
+    this.logger.log(configService.get<string>('API_URL'));
+  }
 
   @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
