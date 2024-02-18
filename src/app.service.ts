@@ -9,7 +9,7 @@ export class AppService {
 
   constructor(private configService: ConfigService) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_HOUR)
   async handleCron() {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
@@ -36,5 +36,9 @@ export class AppService {
     } finally {
       await browser.close();
     }
+  }
+
+  getHello(): string {
+    return '<a href="https://www.rialir.com/lir/">https://www.rialir.com/lir/</a>';
   }
 }
