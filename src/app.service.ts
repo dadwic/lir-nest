@@ -12,11 +12,12 @@ export class AppService {
 
   @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
+    const vercelUrl = this.configService.get<string>('VERCEL_URL');
     const browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(
-        './bin/chromium-v121.0.0-pack.tar',
+        `https://${vercelUrl}/chromium-v121.0.0-pack.tar`,
       ),
       headless: true,
       ignoreHTTPSErrors: true,
