@@ -9,20 +9,14 @@ export class AppService {
 
   constructor(private configService: ConfigService) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   async handleCron() {
     const browser = await chromium.puppeteer.launch({
-      args: [
-        ...chromium.args,
-        '--no-sandbox',
-        '--hide-scrollbars',
-        '--disable-web-security',
-      ],
+      args: chromium.args,
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath,
       headless: chromium.headless,
       ignoreHTTPSErrors: true,
-      ignoreDefaultArgs: ['--disable-extensions'],
     });
     const page = await browser.newPage();
 
