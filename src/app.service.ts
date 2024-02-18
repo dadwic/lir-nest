@@ -20,9 +20,15 @@ export class AppService {
       ...(isLocal
         ? { channel: 'chrome', args: puppeteer.defaultArgs() }
         : {
-            args: chromium.args,
+            args: [
+              ...chromium.args,
+              '--hide-scrollbars',
+              '--disable-web-security',
+            ],
             defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath(),
+            executablePath: await chromium.executablePath(
+              './bin/chromium-v121.0.0-pack.tar',
+            ),
           }),
     });
     const page = await browser.newPage();
