@@ -12,11 +12,12 @@ export class AppController {
   @Get('cron')
   async cron(@Req() req, @Res() res) {
     if (
-      req.headers['Authorization'] !==
+      req.headers['authorization'] !==
       `Bearer ${this.configService.get<string>('CRON_SECRET')}`
     ) {
       return res.status(401).end('Unauthorized');
     }
-    return this.appService.handleCron();
+    await this.appService.handleCron();
+    return res.send('OK');
   }
 }
