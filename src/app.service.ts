@@ -17,7 +17,7 @@ export class AppService {
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(
-        join(__dirname, '..', 'bin', 'chromium-v121.0.0-pack.tar'),
+        join(__dirname, '..', 'bin', 'chromium-v121.0.0'),
       ),
       headless: true,
       ignoreHTTPSErrors: true,
