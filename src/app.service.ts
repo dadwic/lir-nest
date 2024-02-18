@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
-import puppeteer from 'puppeteer';
+import chromium from '@sparticuz/chromium-min';
+import puppeteer from 'puppeteer-core';
 
 @Injectable()
 export class AppService {
@@ -9,9 +10,21 @@ export class AppService {
 
   constructor(private configService: ConfigService) {}
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
-    const browser = await puppeteer.launch();
+    const isLocal = Boolean(this.configService.get<string>('IS_LOCAL'));
+    if (!isLocal) chromium.setGraphicsMode = false;
+
+    const browser = await puppeteer.launch({
+      headless: true,
+      ...(isLocal
+        ? { channel: 'chrome', args: puppeteer.defaultArgs() }
+        : {
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: await chromium.executablePath(),
+          }),
+    });
     const page = await browser.newPage();
 
     try {
@@ -23,13 +36,15 @@ export class AppService {
       const price =
         parseInt(text) + parseInt(this.configService.get<string>('FEE'));
 
-      await fetch(this.configService.get<string>('API_URL'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ price }),
-      });
+      if (price > 1500) {
+        await fetch(this.configService.get<string>('API_URL'), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ price }),
+        });
+      }
       this.logger.debug('TRY sell price', price);
     } catch (error) {
       this.logger.error('Error while scraping job listings:', error);
