@@ -9,7 +9,7 @@ export class AppService {
 
   constructor(private configService: ConfigService) {}
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
