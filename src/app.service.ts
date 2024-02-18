@@ -37,8 +37,4 @@ export class AppService {
       await browser.close();
     }
   }
-
-  getHello(): string {
-    return '<a href="https://www.rialir.com/lir/">https://www.rialir.com/lir/</a>';
-  }
 }
